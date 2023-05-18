@@ -89,55 +89,55 @@ for result in results:
             if match:
                 teams += [match.group(1)]
                 teams += [match.group(2)]
-    
+                
+with open('message_analysis.txt', 'w') as f:
+    word_counts = Counter(words_ignored)
+    top_10_words = word_counts.most_common(25)
+    f.write(str(top_10_words) + '\n')
 
-word_counts = Counter(words_ignored)
-top_10_words = word_counts.most_common(25)
-print(top_10_words)
+    f.write('counting categories...\n')
+    for category in categories:
+        f.write(f"{category} : {words.count(category)}\n")
 
-print('counting categories...')
-for category in categories:
-    print(category, ":", words.count(category))
+    f.write('counting sports...\n')
+    for sport in sports:
+        f.write(f"{sport} : {words.count(sport)}\n")
 
-print('counting sports...')
-for sport in sports:
-    print(sport, ":", words.count(sport))
+    f.write('counting benefits...\n')
+    for benefit in benefits:
+        f.write(f"{benefit} : {words.count(benefit)}\n")
 
-print('counting benefits...')
-for benefit in benefits:
-    print(benefit, ":", words.count(benefit))
+    f.write('counting cash...\n')
+    cash_count = Counter(cash)
+    f.write(str(cash_count.most_common(10)) + '\n')
 
-print('counting cash...')
-cash_count = Counter(cash)
-print(cash_count.most_common(10))
+    domains = []
+    f.write('counting urls...\n')
+    for url in urls:
+        if extract_domain(url) is not None:
+            domains += ([extract_domain(url)])
+    domain_count = Counter(domains)
+    f.write(str(domain_count.most_common(10)) + '\n')
 
-domains = []
-print('counting urls...')
-for url in urls:
-    if extract_domain(url) is not None:
-        domains += ([extract_domain(url)])
-domain_count = Counter(domains)
-print(domain_count.most_common(10))
+    vaild_mentions = []
+    f.write('counting mentions...\n')
+    for mention in mentions:
+        if len(mention) > 3:
+            vaild_mentions += [mention]
+    mention_count = Counter(vaild_mentions)
+    f.write(str(mention_count.most_common(10)) + '\n')
 
-vaild_mentions = []
-print('counting mentions...')
-for mention in mentions:
-    if len(mention) > 3:
-        vaild_mentions += [mention]
-mention_count = Counter(vaild_mentions)
-print(mention_count.most_common(10))
+    f.write('counting emojis...\n')
+    emoji_count = Counter(emojis)
+    f.write(str(emoji_count.most_common(10)) + '\n')
 
-print('counting emojis...')
-emoji_count = Counter(emojis)
-print(emoji_count.most_common(10))
+    f.write('counting teams...\n')
+    team_count = Counter(teams)
+    f.write(str(team_count.most_common(10)) + '\n')
 
-print('counting teams...')
-team_count = Counter(teams)
-print(team_count.most_common(10))
-
-ids = []
-print('counting senders...')
-for sender_id in sender_ids:
-    ids += [extract_id(sender_id[0])]
-sender_count = Counter(ids)
-print(sender_count.most_common(10))
+    ids = []
+    f.write('counting senders...\n')
+    for sender_id in sender_ids:
+        ids += [extract_id(sender_id[0])]
+    sender_count = Counter(ids)
+    f.write(str(sender_count.most_common(10)) + '\n')

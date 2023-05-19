@@ -95,8 +95,11 @@ for result in results:
                 
 with open('message_analysis.txt', 'w') as f:
     word_counts = Counter(words_ignored)
-    top_10_words = word_counts.most_common(25)
-    f.write(str(top_10_words) + '\n')
+    top_25_words = word_counts.most_common(25)
+
+    f.write('counting words...\n')
+    for word in top_25_words:
+        f.write(f"{word} : {top_25_words.count(word)}\n")
 
     f.write('counting categories...\n')
     for category in categories:
@@ -149,7 +152,7 @@ def plot_wordcloud(counter, title):
     counter = {k: v for k, v in counter.items() if k is not None}
     wc = WordCloud(background_color="white", max_words=1000, font_path='./simhei.ttf')  # 添加字体路径simhei.ttf，支持中文
     wc.generate_from_frequencies(frequencies=counter)
-    
+
     plt.figure()
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")

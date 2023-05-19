@@ -2,6 +2,9 @@ import pymysql
 import jieba
 import re
 from collections import Counter
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import os
 
 def remove_punctuations(text):
     # 剔除所有的标点符号
@@ -141,3 +144,39 @@ with open('message_analysis.txt', 'w') as f:
         ids += [extract_id(sender_id[0])]
     sender_count = Counter(ids)
     f.write(str(sender_count.most_common(10)) + '\n')
+
+def plot_wordcloud(counter, title):
+    counter = {k: v for k, v in counter.items() if k is not None}
+    wc = WordCloud(background_color="white", max_words=1000, font_path='./simhei.ttf')  # 添加字体路径simhei.ttf，支持中文
+    wc.generate_from_frequencies(frequencies=counter)
+    
+    plt.figure()
+    plt.imshow(wc, interpolation="bilinear")
+    plt.axis("off")
+    plt.title(title)
+    plt.show()
+    os.makedirs('wordclouds', exist_ok=True)
+    filename = 'wordclouds/' + title.replace(' ', '_')
+    wc.to_file(f'{filename}.png')
+
+# 提取每个类别的数据并生成词云
+with open('message_analysis.txt', 'w') as f:
+    for title, data in zip(["categories", "sports", "benefits", "cash", "domains", "mentions", "emojis", "teams", "senders"],
+                           [categories, sports, benefits, cash, urls, mentions, emojis, teams, sender_ids]):
+        count = Counter(data)
+        f.write(f'counting {title}...\n')
+        f.write(str(count.most_common(20)) + '\n')
+        if title == "cash":
+            cash = list(map(str, cash))
+            count = Counter(cash)
+        if title == "domains":
+            data = [extract_domain(url) for url in data if extract_domain(url) is not None]
+            count = Counter(data)
+        elif title == "mentions":
+            data = [mention for mention in data if len(mention) > 3]
+            count = Counter(data)
+        elif title == "senders":
+            data = [extract_id(sender_id[0]) for sender_id in data]
+            count = Counter(data)
+        
+        plot_wordcloud(count, f"{title} wordcloud")
